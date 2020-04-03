@@ -9,6 +9,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<HomeItem> items;
   Firestore store;
+  int updateCounter;
 
   @override
   void initState() {
@@ -53,10 +54,14 @@ class _HomeState extends State<Home> {
         });
   }
 
-  countItemDialog(DocumentSnapshot item) {
-    showDialog(
+  countItemDialog(DocumentSnapshot item) async {
+    Map<String, dynamic> update = item.data;
+    updateCounter = update['counter'];
+
+    await showDialog(
       context: context,
       builder: (_) {
+        /// Use StatefulBuilder to avoid updating ListView out of this dialog
         return StatefulBuilder(builder: (_, state) {
           return SimpleDialog(
             children: <Widget>[
@@ -65,21 +70,21 @@ class _HomeState extends State<Home> {
                   IconButton(
                       icon: Icon(Icons.remove),
                       onPressed: () {
-                        Map<String, dynamic> update = item.data;
-                        if (update['counter'] > 0) update['counter']--;
-                        item.reference.updateData(update);
+                        state(() {
+                          if (update['counter'] > 0) updateCounter = --update['counter'];
+                        });
                       }),
                   Expanded(
                     child: Center(
-                      child: Text('${item['counter'] ?? 'N/A'}'),
+                      child: Text('$updateCounter'),
                     ),
                   ),
                   IconButton(
                     icon: Icon(Icons.add),
                     onPressed: () {
-                      Map<String, dynamic> update = item.data;
-                      update['counter']++;
-                      item.reference.updateData(update);
+                      state(() {
+                        updateCounter = ++update['counter'];
+                      });
                     },
                   ),
                 ],
@@ -89,6 +94,7 @@ class _HomeState extends State<Home> {
         });
       },
     );
+    item.reference.updateData(update);
   }
 
   @override
