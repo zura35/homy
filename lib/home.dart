@@ -71,7 +71,8 @@ class _HomeState extends State<Home> {
                       icon: Icon(Icons.remove),
                       onPressed: () {
                         state(() {
-                          if (update['counter'] > 0) updateCounter = --update['counter'];
+                          if (update['counter'] > 0)
+                            updateCounter = --update['counter'];
                         });
                       }),
                   Expanded(
@@ -148,8 +149,17 @@ class _HomeState extends State<Home> {
                           }
                         });
 
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(content: Text("Removed $name")));
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Removed $name"),
+                          action: SnackBarAction(
+                            label: "UNDO",
+                            onPressed: () {
+                              store.runTransaction((tx) async {
+                                tx.set(item.reference, item.data);
+                              });
+                            },
+                          ),
+                        ));
                       },
                     );
                   });
