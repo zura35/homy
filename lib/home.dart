@@ -71,7 +71,7 @@ class _HomeState extends State<Home> {
                       }),
                   Expanded(
                     child: Center(
-                      child: Text('${item['counter']}'),
+                      child: Text('${item['counter'] ?? 'N/A'}'),
                     ),
                   ),
                   IconButton(
@@ -124,8 +124,8 @@ class _HomeState extends State<Home> {
                     return Dismissible(
                       key: Key(DateTime.now().toIso8601String()),
                       child: ListTile(
-                        title: Text(item['name']),
-                        trailing: Text('${item['counter']}'),
+                        title: Text(item['name'] ?? 'N/A'),
+                        trailing: Text('${item['counter'] ?? 'N/A'}'),
                         onTap: () {
                           // Open Counter dialog
                           countItemDialog(item);
